@@ -2,8 +2,6 @@
 #include <string>
 #include <algorithm>
 
-//NOT WORK
-
 constexpr int base = 16;
 
 namespace HEX {
@@ -27,55 +25,58 @@ namespace HEX {
     }
 }
 
+
 std::string sum(const std::string& a, const std::string& b){
     std::string res = "";
     int num_a = 0;
     int num_b = 0;
     int curr = 0;
-    int k = 1;
-    
+
     int len_a = a.size();
     int len_b = b.size();
+    int ostatok = 0;
+    int max_len = std::max(len_a, len_b);
 
-    for (int i = len_a - 1; i >= 0; i--){
-        curr = HEX::hex_to_num(a[i]);
-        // std::cout << curr<<std::endl;
-        num_a += curr * k;
-        k *= base;
+    for (int i = 0; i < max_len || (ostatok != 0); i++){
+        int first_index = len_a - i-1;
+        if ((first_index < len_a) && (first_index >= 0)){
+            num_a = HEX::hex_to_num(a[first_index]);
+        }
+        else
+            num_a = 0;
+        // std::cout<<num_a <<" first"<<std::endl;
+
+        int sec_index = len_b - i-1;
+        if ((sec_index < len_b) && (sec_index >= 0)){
+            num_b = HEX::hex_to_num(b[sec_index]);
+        }
+        else
+            num_b = 0;
+
+        // std::cout<<num_b<<" second"<<std::endl;
+
+        curr = (num_a + num_b + ostatok);
+        ostatok = (curr) / base;
+
+        res += HEX::value_to_hex(curr % base);
+        
     }
-    // std::cout << num_a<<std::endl;
-    k = 1;
 
-    for (int i = 0; i < len_b; i++){
-        curr = HEX::hex_to_num(b[i]);
-        num_b += curr * k;
-        k *= base;
-    }
-    // std::cout << num_b<<std::endl;
+    // res += HEX::value_to_hex(ostatok);
 
-    int num_res = num_a + num_b;
-    // std::cout << num_res <<std::endl; 
-
-    while(num_res >= base){
-        curr = num_res % base;
-        res+= HEX::value_to_hex(curr);
-
-        num_res /= base;
-    }
-
-    curr = num_res % base;
-    res+= HEX::value_to_hex(curr);
+    // std::cout<<res << " res"<<std::endl;
     std::reverse(res.begin(), res.end());
     return res;
-}
+};
 
-int main() {
+
+int main(void) {
     std::string first, second, res;
     std::cin >> first;
     std::cin >> second;
 
-    // first = "2";
-    // second = "F";
+    // first = "AAAAAAAA";
+    // second = "FFFFFF";
     res = sum(first, second);
     std::cout << res;
     return 0;
